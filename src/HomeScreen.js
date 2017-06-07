@@ -18,6 +18,7 @@ export default class HomeScreen extends React.Component {
   };
   constructor(props) {
     super(props);
+    const { navigate } = this.props.navigation;
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       dataSource: ds.cloneWithRows([
@@ -25,7 +26,7 @@ export default class HomeScreen extends React.Component {
           title: 'Jugadores',
           background: require('../images/jugadores.png'),
           onPress: () => {
-            this.props.navigation.navigate('Home')
+            navigate('Home')
           }
         }, {
           title: 'Equipos',
@@ -33,6 +34,9 @@ export default class HomeScreen extends React.Component {
         }, {
           title: 'Liga Manija',
           background: require('../images/ligaManija.png'),
+          onPress: () => {
+            navigate('Liga', { liga: { name: 'Liga Manija' } })
+          }
         },
       ])
     };
@@ -47,11 +51,7 @@ export default class HomeScreen extends React.Component {
     const { navigate } = this.props.navigation;
     return (
       <View 
-        style={{
-          flex: 1,
-          width: '100%',
-          backgroundColor: '#dddddd',
-        }}>
+        style={ styles.container }>
         <ListView
           dataSource={this.state.dataSource}
           renderRow={(rowData) => 
@@ -94,6 +94,13 @@ export default class HomeScreen extends React.Component {
             </View>
           }
         />
+        <View>
+          <Button
+            onPress={ () => 0 }
+            title="Estoy para jugar"
+            style={{
+            }} />
+        </View>
       </View>
     );
   }
