@@ -19,40 +19,36 @@ export default class SimpleCell extends Component {
   }
   render() {
     const { rowData } = this.props
-    return <View
-      style={ styles.container }>
+    return <View>
       <TouchableHighlight
         onPress={ rowData.onPress }
         onShowUnderlay={ () => this.setState({ highlighted: true }) }
         onHideUnderlay={ () => this.setState({ highlighted: false }) }
-        style={{
-          backgroundColor: '#ffffff',
-          borderColor: '#bbbbbb',
-          borderBottomWidth: 0.5,
-          overflow: 'hidden',
+        style={[
+          styles.cell,
+          rowData.topCell && styles.topCell,
+          this.props.style, {
           height: 44,
-          justifyContent: 'center',
-          ...rowData.topCell && {
-            marginTop: 10,
-            borderTopWidth: 0.5
-          }
-        }}
+        }]}
         underlayColor='#2c7efc'
         activeOpacity={ 1 }>
         <View style={{
           flexDirection: 'row',
         }}>
-          <Image source={ rowData.icon }
+          {
+          rowData.icon && <Image source={ rowData.icon }
             style={{
               width: 30,
               height: 30,
-              marginLeft: 10,
-              marginRight: 10,
+              marginLeft: 16,
+              marginRight: -6,
             }} />
+          }
           <Text style={[{
             backgroundColor: 'transparent',
             color: '#222',
             fontSize: 17,
+            marginLeft: 16,
             textAlign: 'center',
             alignSelf: 'center',
           }, this.state.highlighted && { color: '#fff' }]}>

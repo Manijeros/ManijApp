@@ -9,14 +9,32 @@ module.exports.styles = StyleSheet.create({
     backgroundColor: '#efeff4',
     width: '100%',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  cell: {
+    backgroundColor: '#ffffff',
+    borderColor: '#bbbbbb',
+    borderBottomWidth: 0.5,
+    overflow: 'hidden',
+    justifyContent: 'center',
   },
-  instructions: {
+  topCell: {
+    marginTop: 10,
+    borderTopWidth: 0.5
+  },
+  tableHeader: {
+    fontSize: 13,
+    color: '#222222',
+    marginTop: 10,
+    paddingLeft: 16,
+    marginBottom: -5,
+  },
+  matchHeader: {
+    flex: 1,
     textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+    fontSize: 17,
+  },
+  matchResult: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 24,
   },
 });

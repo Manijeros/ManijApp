@@ -75,9 +75,9 @@ export default class HomeScreen extends React.Component {
                   style={{
                     width: '100%',
                     height: 125,
-                    resizeMode: 'cover',
                     justifyContent: 'center',
-                  }}>
+                  }}
+                  resizeMode='cover'>
                   <Text style={{
                     backgroundColor: 'transparent',
                     color: '#fff',

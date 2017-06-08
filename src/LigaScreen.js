@@ -38,6 +38,7 @@ export default class LigaScreen extends React.Component {
           icon: require('../images/icon-table.png'),
           title: 'Cargar Partido',
           onPress: () => {
+            navigate('AddMatch')
           },
         }, {
           icon: require('../images/icon-table.png'),
