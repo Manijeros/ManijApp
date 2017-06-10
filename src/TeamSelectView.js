@@ -15,6 +15,19 @@ export default class TeamSelectView extends React.Component {
   constructor(props) {
     super(props);
   }
+  onDragRelease(event) {
+    const oldPlayers = this.props.players
+    const playerMap = {}
+    for (const i in oldPlayers) {
+      playerMap[oldPlayers[i].name] = oldPlayers[i]
+    }
+    const newPlayers = []
+    for  (const i in event.itemOrder) {
+      const key = event.itemOrder[i].key
+      newPlayers.push(playerMap[key])
+    }
+    this.props.onDragRelease(newPlayers)
+  }
   render() {
     const { players } = this.props
     return (
@@ -28,6 +41,8 @@ export default class TeamSelectView extends React.Component {
     </View>
     <SortableGrid
       itemsPerRow={ 2 }
+      onDragStart={ this.props.onDragStart }
+      onDragRelease={ this.onDragRelease.bind(this) }
       style={{
       }}>
       {

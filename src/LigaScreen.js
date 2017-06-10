@@ -38,7 +38,7 @@ export default class LigaScreen extends React.Component {
           icon: require('../images/icon-table.png'),
           title: 'Cargar Partido',
           onPress: () => {
-            navigate('AddMatch')
+            navigate('Match')
           },
         }, {
           icon: require('../images/icon-table.png'),
@@ -61,7 +61,6 @@ export default class LigaScreen extends React.Component {
         style={{
           flex: 1,
           width: '100%',
-          backgroundColor: '#dddddd',
         }}>
         <ListView
           dataSource={this.state.dataSource}

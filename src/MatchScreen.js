@@ -1,16 +1,17 @@
 import React, { Component } from 'react'
 import {
   AppRegistry,
-  StyleSheet,
   Text,
   View,
-  Button,
-  ListView,
   Image,
   TouchableHighlight,
-  ScrollView,
   Picker,
+  TextInput,
+  KeyboardAvoidingView,
 } from 'react-native'
+import { NavigationActions } from 'react-navigation'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import R from 'ramda'
 
 import { styles } from './styles'
 import SimpleCell from './SimpleCell'
@@ -19,12 +20,11 @@ import DatePicker from './DatePicker'
 
 export default class AddMatchScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    title: 'Cargar Partido',
+    title: 'Partido',
   })
   constructor(props) {
     super(props)
     const { navigate } = this.props.navigation
-    const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 != r2 })
     this.state = {
       players: [{
         name: '@ema',
@@ -48,13 +48,41 @@ export default class AddMatchScreen extends React.Component {
       }],
       date: new Date(),
       goals: [0, 0],
+      notes: '',
+      scrollBarDisabled: false,
     }
+  }
+  disableScrollBar() {
+    this.setState(ps => { return {...ps, scrollBarDisabled: true }})
+  }
+  updatePlayers(sortedPlayers) {
+    this.setState(ps => {
+      return {
+        ...ps,
+        scrollBarDisabled: false,
+        players: sortedPlayers,
+      }
+    })
+  }
+  updateTeams(sortedTeams) {
+    console.log(sortedTeams)
+    this.setState(ps => {
+      return {
+        ...ps,
+        scrollBarDisabled: false,
+        teams: sortedTeams,
+      }
+    })
+  }
+  async save() {
+    this.props.navigation.dispatch(NavigationActions.back())
   }
   render() {
     const { navigate } = this.props.navigation
     const { players, teams, date, goals } = this.state
     return (
-      <ScrollView>
+      <KeyboardAwareScrollView
+        scrollEnabled={ !this.state.scrollBarDisabled }>
         <Text style={ styles.tableHeader }>JUGADORES</Text>
         <View
           style={ [styles.cell, styles.topCell, {
@@ -62,8 +90,10 @@ export default class AddMatchScreen extends React.Component {
             paddingRight: 40,
           }] }>
           <TeamSelectView
+            players={ players }
             rounded={ true }
-            players={ players } />
+            onDragStart={ this.disableScrollBar.bind(this) }
+            onDragRelease={ this.updatePlayers.bind(this) } />
         </View>
         <Text style={ styles.tableHeader }>EQUIPOS</Text>
         <View
@@ -73,8 +103,9 @@ export default class AddMatchScreen extends React.Component {
           }] }>
           <TeamSelectView
             players={ teams }
-            rounded={ false }
-            resizeMode={ Image.resizeMode.contain } />
+            resizeMode={ Image.resizeMode.contain }
+            onDragStart={ this.disableScrollBar.bind(this) }
+            onDragRelease={ this.updateTeams.bind(this) } />
         </View>
         <Text style={ styles.tableHeader }>RESULTADO</Text>
         <View
@@ -111,7 +142,7 @@ export default class AddMatchScreen extends React.Component {
                       alignSelf: 'center',
                     }}>
                     {
-                      [...Array(150).keys()].reverse().map(i =>
+                      R.range(0, 150).reverse().map(i =>
                         <Picker.Item key={ `goals${index}_${i}` } label={ `${i}` } value={ i } />
                       )
                     }
@@ -124,12 +155,42 @@ export default class AddMatchScreen extends React.Component {
         <Text style={ styles.tableHeader }>FECHA</Text>
         <DatePicker
           date={ date }
-          onDateChange={ (newDate) => this.setState(prevState => { return {...prevState, date: newDate, prevState }}) }
+          onDateChange={ (newDate) => this.setState(prevState => { return {...prevState, date: newDate }}) }
+          style={[ styles.cell, styles.topCell ]} />
+        <Text style={ styles.tableHeader }>NOTAS</Text>
+        <View
           style={[
             styles.cell, styles.topCell, {
               marginBottom: 10,
-          }]} />
-      </ScrollView>
+              padding: 16,
+          }]}>
+          <TextInput
+            placeholder='Notas'
+            multiline={ true }
+            onChangeText={ (text) => this.setState(prevState => { return {...prevState, notes: text }}) }
+            >
+            <Text style={ styles.cellText }>{ this.state.notes }</Text>
+          </TextInput>
+        </View>
+        <TouchableHighlight
+          onPress={ this.save.bind(this) }
+          style={{
+            justifyContent: 'center',
+            marginTop: 10,
+            marginBottom: 10,
+            backgroundColor: '#080',
+            height: 44,
+          }}
+          underlayColor='#060'>
+            <Text
+              style={{
+                alignSelf: 'center',
+                color: '#fff',
+                fontWeight: 'bold',
+                fontSize: 17,
+              }}>Guardar</Text>
+          </TouchableHighlight>
+      </KeyboardAwareScrollView>
     )
   }
 }

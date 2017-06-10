@@ -10,7 +10,7 @@ import {
   TouchableHighlight,
 } from 'react-native'
 
-import { styles } from './styles'
+import { color, styles } from './styles'
 
 export default class SimpleCell extends Component {
   constructor(props) {
@@ -30,7 +30,7 @@ export default class SimpleCell extends Component {
           this.props.style, {
           height: 44,
         }]}
-        underlayColor='#2c7efc'
+        underlayColor={ color.highlightedCell }
         activeOpacity={ 1 }>
         <View style={{
           flexDirection: 'row',
@@ -44,14 +44,7 @@ export default class SimpleCell extends Component {
               marginRight: -6,
             }} />
           }
-          <Text style={[{
-            backgroundColor: 'transparent',
-            color: '#222',
-            fontSize: 17,
-            marginLeft: 16,
-            textAlign: 'center',
-            alignSelf: 'center',
-          }, this.state.highlighted && { color: '#fff' }]}>
+          <Text style={[styles.cellText, this.state.highlighted && { color: color.highlightedCellText }]}>
             {rowData.title}
           </Text>
         </View>

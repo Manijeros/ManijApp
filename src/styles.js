@@ -3,7 +3,13 @@ import {
   StyleSheet,
 } from 'react-native';
 
-module.exports.styles = StyleSheet.create({
+var color = {
+  cellText: '#222',
+  highlightedCell: '#2c7efc',
+  highlightedCellText: 'white',
+}
+
+var styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#efeff4',
@@ -15,6 +21,14 @@ module.exports.styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     overflow: 'hidden',
     justifyContent: 'center',
+  },
+  cellText: {
+    backgroundColor: 'transparent',
+    color: color.cellText,
+    fontSize: 17,
+    marginLeft: 16,
+    textAlign: 'center',
+    alignSelf: 'center',
   },
   topCell: {
     marginTop: 10,
@@ -31,6 +45,7 @@ module.exports.styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     fontSize: 17,
+    color: color.cellText,
   },
   matchResult: {
     flex: 1,
@@ -38,3 +53,6 @@ module.exports.styles = StyleSheet.create({
     fontSize: 24,
   },
 });
+
+module.exports.color = color
+module.exports.styles = styles
