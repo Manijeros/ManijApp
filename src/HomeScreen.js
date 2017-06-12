@@ -35,7 +35,10 @@ export default class HomeScreen extends React.Component {
           title: 'Liga Manija',
           background: require('../images/ligaManija.png'),
           onPress: () => {
-            navigate('Liga', { liga: { name: 'Liga Manija' } })
+            navigate('Liga', { liga: {
+              name: 'Liga Manija',
+              playersPerMatch: 4,
+            } })
           }
         },
       ])

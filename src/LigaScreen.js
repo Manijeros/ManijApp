@@ -19,7 +19,7 @@ export default class LigaScreen extends React.Component {
   })
   constructor(props) {
     super(props)
-    const { navigate } = this.props.navigation
+    const { navigation } = this.props
     const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 != r2 })
     this.state = {
       dataSource: ds.cloneWithRows([
@@ -38,7 +38,9 @@ export default class LigaScreen extends React.Component {
           icon: require('../images/icon-table.png'),
           title: 'Cargar Partido',
           onPress: () => {
-            navigate('Match')
+            navigation.navigate('Match', {
+              numberOfPlayers: navigation.state.params.liga.playersPerMatch,
+            })
           },
         }, {
           icon: require('../images/icon-table.png'),

@@ -41,12 +41,13 @@ export default class TeamSelectView extends React.Component {
     </View>
     <SortableGrid
       itemsPerRow={ 2 }
+      dragActivationTreshold={ 300 }
       onDragStart={ this.props.onDragStart }
       onDragRelease={ this.onDragRelease.bind(this) }
       style={{
       }}>
       {
-        players.map( (player, index) =>
+        players.map( player =>
           <View key={ player.name }
             style={{
               flex: 1,

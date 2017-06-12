@@ -7,7 +7,7 @@ import {
   TouchableHighlight,
   Picker,
   TextInput,
-  KeyboardAvoidingView,
+  Button,
 } from 'react-native'
 import { NavigationActions } from 'react-navigation'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -18,27 +18,39 @@ import SimpleCell from './SimpleCell'
 import TeamSelectView from './TeamSelectView'
 import DatePicker from './DatePicker'
 
-export default class AddMatchScreen extends React.Component {
+function interlace(deinterlaced) {
+  const a = deinterlaced[0], b = deinterlaced[1]
+  const interlaced = []
+  let i = 0
+  while (i < a.length || i < b.length) {
+    if (i < a.length) {
+      interlaced.push(a[i])
+    }
+    if (i < b.length) {
+      interlaced.push(b[i])
+    }
+    i++
+  }
+  return interlaced
+}
+
+function deinterlace(interlaced) {
+  const a = [], b = []
+  for (i in interlaced) {
+    ((i % 2 == 0) ? a : b).push(interlaced[i])
+  }
+  return [a, b]
+}
+
+export default class MatchScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: 'Partido',
   })
   constructor(props) {
     super(props)
-    const { navigate } = this.props.navigation
-    this.state = {
-      players: [{
-        name: '@ema',
-        profileImage: 'http://scvsoft.com/images/people/emanuel_andrada.jpg',
-      }, {
-        name: '@fernandoarielsoto',
-        profileImage: 'http://scvsoft.com/images/people/fernando_soto.jpg',
-      }, {
-        name: '@pola',
-        profileImage: 'http://scvsoft.com/images/people/daniel_mule.jpg',
-      }, {
-        name: '@javi',
-        profileImage: 'http://scvsoft.com/images/people/javier_fernandes.jpg',
-      }],
+    const { navigation } = this.props
+    const match = this.props.match || {
+      players: [[], []],
       teams: [{
         name: 'Manchester United',
         profileImage: 'https://www.fifaindex.com/static/FIFA17/images/crest/256/light/11.png',
@@ -49,28 +61,53 @@ export default class AddMatchScreen extends React.Component {
       date: new Date(),
       goals: [0, 0],
       notes: '',
-      scrollBarDisabled: false,
     }
+    this.state = {
+      numberOfPlayers: navigation.state.params.numberOfPlayers,
+      match: match,
+      scrollBarDisabled: false,
+      askPlayersIfRequired: true,
+      askTeamsIfRequired: true,
+    }
+  }
+  selectPlayers() {
+    const { numberOfPlayers } = this.state
+    this.props.navigation.navigate('PlayerSelect', {
+      numberOfPlayers: numberOfPlayers,
+      selected: interlace(this.state.match.players),
+      onSelectChange: players => {
+        this.updatePlayers(players)
+      }
+    })
   }
   disableScrollBar() {
     this.setState(ps => { return {...ps, scrollBarDisabled: true }})
   }
   updatePlayers(sortedPlayers) {
-    this.setState(ps => {
-      return {
-        ...ps,
-        scrollBarDisabled: false,
-        players: sortedPlayers,
-      }
+    this.updateMatch({
+      players: deinterlace(sortedPlayers),
+    }, {
+      scrollBarDisabled: false,
     })
   }
   updateTeams(sortedTeams) {
     console.log(sortedTeams)
-    this.setState(ps => {
+    this.updateMatch({
+      teams: sortedTeams,
+    }, {
+      scrollBarDisabled: false,
+    })
+  }
+  updateMatch(m, state) {
+    this.setState(prevState => {
+      const match = {
+        ...prevState.match,
+        ...(typeof(m) == 'function' ? m(prevState.match) : m)
+      }
       return {
-        ...ps,
-        scrollBarDisabled: false,
-        teams: sortedTeams,
+        ...prevState,
+        ...state,
+        match: match
       }
     })
   }
@@ -78,8 +115,7 @@ export default class AddMatchScreen extends React.Component {
     this.props.navigation.dispatch(NavigationActions.back())
   }
   render() {
-    const { navigate } = this.props.navigation
-    const { players, teams, date, goals } = this.state
+    const { players, teams, date, goals } = this.state.match
     return (
       <KeyboardAwareScrollView
         scrollEnabled={ !this.state.scrollBarDisabled }>
@@ -90,10 +126,13 @@ export default class AddMatchScreen extends React.Component {
             paddingRight: 40,
           }] }>
           <TeamSelectView
-            players={ players }
+            players={ interlace(players) }
             rounded={ true }
             onDragStart={ this.disableScrollBar.bind(this) }
             onDragRelease={ this.updatePlayers.bind(this) } />
+          <Button
+            onPress={ this.selectPlayers.bind(this) }
+            title="Elegir" />
         </View>
         <Text style={ styles.tableHeader }>EQUIPOS</Text>
         <View
@@ -132,10 +171,10 @@ export default class AddMatchScreen extends React.Component {
                   <Picker
                     key={ `goals${index}` }
                     selectedValue={ goals[index] }
-                    onValueChange={ itemValue => this.setState(prevState => {
-                      var newState = {...prevState}
-                      newState.goals[index] = itemValue
-                      return newState
+                    onValueChange={ itemValue => this.updateMatch(prevMatch => {
+                      var newMatch = {...prevMatch}
+                      newMatch.goals[index] = itemValue
+                      return newMatch
                     })}
                     style={{
                       flex: 1,
@@ -155,7 +194,7 @@ export default class AddMatchScreen extends React.Component {
         <Text style={ styles.tableHeader }>FECHA</Text>
         <DatePicker
           date={ date }
-          onDateChange={ (newDate) => this.setState(prevState => { return {...prevState, date: newDate }}) }
+          onDateChange={ (newDate) => this.updateMatch({ date: newDate }) }
           style={[ styles.cell, styles.topCell ]} />
         <Text style={ styles.tableHeader }>NOTAS</Text>
         <View
@@ -167,7 +206,7 @@ export default class AddMatchScreen extends React.Component {
           <TextInput
             placeholder='Notas'
             multiline={ true }
-            onChangeText={ (text) => this.setState(prevState => { return {...prevState, notes: text }}) }
+            onChangeText={ (text) => this.updateMatch({ notes: text }) }
             >
             <Text style={ styles.cellText }>{ this.state.notes }</Text>
           </TextInput>
@@ -195,4 +234,4 @@ export default class AddMatchScreen extends React.Component {
   }
 }
 
-AppRegistry.registerComponent('AddMatch', () => AddMatchScreen);
+AppRegistry.registerComponent('MatchScreen', () => MatchScreen)
